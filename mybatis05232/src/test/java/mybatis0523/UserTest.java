@@ -17,6 +17,8 @@ public class UserTest {
 		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 		
 		SqlSession session = sqlSessionFactory.openSession();
-		session.selectOne("test.findUserById", 1);
+		Object o = session.selectOne("test.findUserById", 10);
+		System.out.println(o);
 	}
 }
+

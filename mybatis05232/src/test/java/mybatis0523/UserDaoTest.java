@@ -27,9 +27,9 @@ public class UserDaoTest {
 	@Test
 	public void testFindUserById() throws IOException {
 		UserDao userDao = new UserDaoImpl(sqlSessionFactory);
-		User user = userDao.findUserById(2);
+		User user = userDao.findUserById(10);
 		System.out.println(user);
-		User user2 = userDao.findUserById(3);
+		User user2 = userDao.findUserById(16);
 		System.out.println(user2);
 	}
 	
