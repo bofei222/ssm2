@@ -1,0 +1,22 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 命名空间，做sql隔离 -->
+<mapper namespace="test">
+	<select id="findUserById" parameterType="int"
+			resultType="com.bf.pojo.User">
+		select * FROM user where id = #{x};
+	</select>
+
+	<insert id="insertUser" parameterType="com.bf.pojo.User" useGeneratedKeys="true" keyProperty="id">
+		insert into user(username, sex) values (#{username}, #{sex})
+	</insert>
+
+	<select id="selectAllUser" resultType="com.bf.pojo.User">
+		select * from user
+	</select>
+	
+	
+	
+</mapper>    

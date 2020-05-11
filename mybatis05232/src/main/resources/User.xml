@@ -1,0 +1,34 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 命名空间，做sql隔离 -->
+<mapper namespace="test">
+	<select id="findUserById" parameterType="int" resultType="com.bf.pojo.User">
+		select * FROM user where id = #{x};
+	</select>
+	
+	<!-- 
+		#{}：占位符，如果是传入的是基本类型，#{}中的内容可以随便写
+		${}：拼接符，字符串原样拼接,如果传入的参数是基本类型，${}中必须是value
+		注意：拼接符有sql注入的风险
+	 -->
+	<select id="findUserByUserName" parameterType="string" resultType="com.bf.pojo.User">
+		select * from user where username like '%${value}%';
+	</select>
+	
+	<!-- 
+		如果传入的是对象，#{}中传入的是属性.属性.属性 
+		-->
+	<insert id="insertUser" parameterType="com.bf.pojo.User" useGeneratedKeys="true"
+            keyProperty="id">
+		insert into user(username, birthday, sex, address) values (#{username}, #{birthday}, #{sex}, #{address});
+	</insert>
+	
+	<delete id="delUserById" parameterType="int">
+		delete from user where id = #{x}
+	</delete>
+	
+	
+	
+</mapper>    

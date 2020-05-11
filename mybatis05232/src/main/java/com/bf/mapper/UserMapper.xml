@@ -1,0 +1,119 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 1. 映射文件中 namespace = 接口的全路径名称 2. id = 方法名 传参相等 返回参数相等 -->
+<mapper namespace="com.bf.mapper.UserMapper">
+	<sql id="user_Where">
+		<where>
+			<if test="username != null and username != ''">
+				and username like '%${username}%'
+			</if>
+			<if test="sex != null and sex != ''">
+				and sex = #{sex}
+			</if>
+		</where>
+	</sql>
+
+	<select id="findUserById" parameterType="int"
+		resultType="com.bf.pojo.User">
+		select * FROM user where id = #{x};
+	</select>
+
+	<!-- #{}：占位符，如果是传入的是基本类型，#{}中的内容可以随便写 ${}：拼接符，字符串原样拼接,如果传入的参数是基本类型，${}中必须是value 
+		注意：拼接符有sql注入的风险 -->
+	<select id="findUserByUserName" parameterType="string"
+		resultType="com.bf.pojo.User">
+		select * from user where username like '%${value}%';
+	</select>
+
+	<!-- 如果传入的是对象，#{}中传入的是属性.属性.属性 -->
+	<insert id="insertUser" parameterType="com.bf.pojo.User"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into user(username,
+		birthday, sex, address) values (#{username}, #{birthday}, #{sex},
+		#{address});
+	</insert>
+
+	<select id="findUserByVo" parameterType="com.bf.pojo.QueryVo"
+		resultType="com.bf.pojo.User">
+		select * from user where username like '%${user.username}%'
+		and sex = #{user.sex};
+	</select>
+
+	<select id="findUserCount" resultType="Integer">
+		select count(*) from user
+	</select>
+
+	<select id="findUserByUserNameAndSex"
+            parameterType="com.bf.pojo.User" resultType="com.bf.pojo.User">
+		select * from user
+
+		<include refid="user_Where"></include>
+	</select>
+
+	<select id="findUserByIds" parameterType="com.bf.pojo.QueryVo"
+		resultType="com.bf.pojo.User">
+		select * from user where id in
+
+		<foreach item="id" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="findOrdersAndUser1"
+		resultType="com.bf.pojo.CustomOrders">
+		select o.*, u.id uid, username, birthday, sex, address
+		from
+		orders o, user u
+		where o.user_id = u.id
+	</select>
+
+	<resultMap type="com.bf.pojo.Orders"
+		id="orderAndUserResultMap">
+		<id column="id" property="id" />
+		<result column="user_id" property="userId" />
+		<result column="number" property="number" />
+		<result column="createtime" property="createtime" />
+		<result column="note" property="note" />
+		<!-- 指定单个对象的对应关系 -->
+		<association property="user" javaType="com.bf.pojo.User">
+			<id column="uid" property="id" />
+			<result column="username" property="username" />
+			<result column="birthday" property="birthday" />
+			<result column="sex" property="sex" />
+			<result column="address" property="address" />
+		</association>
+	</resultMap>
+
+	<select id="findOrdersAndUser2"
+		resultMap="orderAndUserResultMap">
+		select o.*, u.id uid, username, birthday, sex, address
+		from
+		orders o, user u
+		where o.user_id = u.id
+	</select>
+
+	<resultMap type="com.bf.pojo.User"
+		id="userAndOrdersResultMap">
+		<id column="id" property="id" />
+		<result column="username" property="username" />
+		<result column="birthday" property="birthday" />
+		<result column="sex" property="sex" />
+		<result column="address" property="address" />
+		<!-- 指定集合对象的关系 -->
+		<collection property="orders" ofType="com.bf.pojo.Orders">
+			<id column="oid" property="id" />
+			<result column="user_id" property="userId" />
+			<result column="number" property="number" />
+			<result column="createtime" property="createtime" />
+			<result column="note" property="note" />
+		</collection>
+	</resultMap>
+	
+	<select id="findUserAndOrders"
+		resultMap="userAndOrdersResultMap">
+		select u.*, o.id oid, user_id, number, createtime, note from user u, orders o where u.id = o.user_id
+	</select>
+</mapper>    
